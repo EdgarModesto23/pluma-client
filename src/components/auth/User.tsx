@@ -2,20 +2,28 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./Auth";
 import axios from "axios";
 
+interface UserContextProps {
+  user: UserInfo;
+  setUser: (newUser: UserInfo) => void;
+}
+
 export interface UserInfo {
+  id: string;
   email: string;
   username: string;
   name: string;
 }
 
-const UserContext = createContext<UserInfo | null>(null);
+const UserContext = createContext<UserContextProps | null>(null);
 
 const UserProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [userID, setUserID] = useState<string>("");
 
   const setUser = (newUser: UserInfo) => {
+    setUserID(newUser.id);
     setUserEmail(newUser.email);
     setUsername(newUser.username);
     setName(newUser.name);
@@ -30,6 +38,7 @@ const UserProvider = ({ children }) => {
         .get(url)
         .then((response) => {
           const newUser: UserInfo = {
+            id: response.data.id,
             email: response.data.email,
             username: response.data.username,
             name: response.data.name,
@@ -44,12 +53,18 @@ const UserProvider = ({ children }) => {
 
   const contextValue = useMemo(() => {
     const currentUser: UserInfo = {
+      id: userID,
       email: userEmail,
       username: username,
       name: name,
     };
-    return currentUser;
-  }, [userEmail, username, name]);
+
+    const context: UserContextProps = {
+      user: currentUser,
+      setUser: setUser,
+    };
+    return context;
+  }, [userEmail, username, name, userID]);
 
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>

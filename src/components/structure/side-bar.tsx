@@ -20,10 +20,22 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { LogoDefault } from "../svg/logo-no-title";
 import Avatar, { genConfig } from "react-nice-avatar";
-import { useUserInfo } from "../auth/User";
-import { Button, Icon, Menu, MenuItem } from "@mui/material";
+import { UserInfo, useUserInfo } from "../auth/User";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Menu,
+  MenuItem,
+  TextField,
+} from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const drawerWidth = 240;
 
@@ -96,7 +108,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-const settings = ["Profile", "Logout"];
+const settings = ["Update user details", "Logout"];
 
 export default function SideBar() {
   const navigate = useNavigate();
@@ -105,6 +117,21 @@ export default function SideBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+
+  const [openSettings, setOpenSettings] = React.useState(false);
+  const [updatedUser, setUpdatedUser] = React.useState({
+    state: false,
+    message: "",
+  });
+  const [showSnack, setSnack] = React.useState(false);
+
+  const handleClickOpenSettings = () => {
+    setOpenSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    setOpenSettings(false);
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -123,8 +150,40 @@ export default function SideBar() {
   };
 
   const userInfo = useUserInfo();
+  const baseURL = import.meta.env.VITE_API_URL;
+  const url = baseURL + "user/" + userInfo?.user.id + "/";
 
-  const config = genConfig(userInfo?.email);
+  function removeEmptyPairs(obj) {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+  }
+
+  const config = genConfig(userInfo?.user.email);
+
+  React.useEffect(() => {
+    const baseURL = import.meta.env.VITE_API_URL;
+    const url = baseURL + "user/get";
+    if (updatedUser["state"]) {
+      axios
+        .get(url)
+        .then((response) => {
+          const newUser: UserInfo = {
+            id: response.data.id,
+            email: response.data.email,
+            username: response.data.username,
+            name: response.data.name,
+          };
+          userInfo?.setUser(newUser);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    }
+  }, [updatedUser, userInfo]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -156,7 +215,7 @@ export default function SideBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Button color="secondary" onClick={handleOpenUserMenu}>
               <KeyboardArrowDown />
-              <Typography paddingX={1}>{userInfo?.username}</Typography>
+              <Typography paddingX={1}>{userInfo?.user.username}</Typography>
               <Avatar style={{ width: "40px", height: "40px" }} {...config} />
             </Button>
             <Menu
@@ -181,15 +240,82 @@ export default function SideBar() {
                   onClick={() => {
                     setting == "Logout"
                       ? navigate("logout/")
-                      : handleCloseUserMenu;
+                      : handleClickOpenSettings();
                   }}
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
+              <Dialog
+                open={openSettings}
+                onClose={handleCloseSettings}
+                PaperProps={{
+                  component: "form",
+                  onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                    event.preventDefault();
+                    const formData = new FormData(event.currentTarget);
+                    const formJson = Object.fromEntries(formData.entries());
+                    const data = removeEmptyPairs(formJson);
+                    axios
+                      .patch(url, data)
+                      .then(() => {
+                        setUpdatedUser({
+                          state: true,
+                          message: "User updated succesfully!",
+                        });
+                        setSnack(true);
+                      })
+                      .catch((error) => {
+                        setUpdatedUser({
+                          state: true,
+                          message: error.response.data,
+                        });
+                      });
+                    handleCloseSettings();
+                  },
+                }}
+              >
+                <DialogTitle>Update user details</DialogTitle>
+                <DialogContent>
+                  <DialogContentText></DialogContentText>
+                  <TextField
+                    autoFocus
+                    id="email"
+                    name="email"
+                    label="Email Address"
+                    type="email"
+                    fullWidth
+                    variant="standard"
+                  />
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="username"
+                    name="username"
+                    label="Username"
+                    fullWidth
+                    variant="standard"
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseSettings}>Cancel</Button>
+                  <Button type="submit">Save</Button>
+                </DialogActions>
+              </Dialog>
             </Menu>
           </Box>
         </Toolbar>
+        {setSnack ? (
+          <Snackbar
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            open={showSnack}
+            autoHideDuration={2000}
+            onClose={() => {
+              setSnack(false);
+            }}
+            message={updatedUser.message}
+          />
+        ) : null}
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
