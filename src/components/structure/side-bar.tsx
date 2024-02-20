@@ -16,8 +16,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { LogoDefault } from "../svg/logo-no-title";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { UserInfo, useUserInfo } from "../auth/User";
@@ -32,6 +30,8 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import HomeIcon from "@mui/icons-material/Home";
 import Snackbar from "@mui/material/Snackbar";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -119,11 +119,21 @@ export default function SideBar() {
   );
 
   const [openSettings, setOpenSettings] = React.useState(false);
+  const [openAddBoard, setOpenAddBoard] = React.useState(false);
+
   const [updatedUser, setUpdatedUser] = React.useState({
     state: false,
     message: "",
   });
   const [showSnack, setSnack] = React.useState(false);
+
+  const handleOpenAddBoard = () => {
+    setOpenAddBoard(true);
+  };
+
+  const handleCloseAddBoard = () => {
+    setOpenAddBoard(false);
+  };
 
   const handleClickOpenSettings = () => {
     setOpenSettings(true);
@@ -149,9 +159,66 @@ export default function SideBar() {
     setOpen(false);
   };
 
+  const patchData = (
+    event: React.FormEvent<HTMLFormElement>,
+    url: string,
+    closeHandler: () => void,
+    successMethod: string
+  ) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+    const data = removeEmptyPairs(formJson);
+    axios
+      .patch(url, data)
+      .then(() => {
+        setUpdatedUser({
+          state: true,
+          message: successMethod,
+        });
+        setSnack(true);
+      })
+      .catch((error) => {
+        setUpdatedUser({
+          state: true,
+          message: error.response.data,
+        });
+      });
+    closeHandler();
+  };
+
+  const postData = (
+    event: React.FormEvent<HTMLFormElement>,
+    url: string,
+    closeHandler: () => void,
+    successMethod: string
+  ) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+    const data = removeEmptyPairs(formJson);
+    axios
+      .post(url, data)
+      .then(() => {
+        setUpdatedUser({
+          state: true,
+          message: successMethod,
+        });
+        setSnack(true);
+      })
+      .catch((error) => {
+        setUpdatedUser({
+          state: true,
+          message: error.response.data,
+        });
+      });
+    closeHandler();
+  };
+
   const userInfo = useUserInfo();
   const baseURL = import.meta.env.VITE_API_URL;
   const url = baseURL + "user/" + userInfo?.user.id + "/";
+  const post_board = baseURL + "board/";
 
   function removeEmptyPairs(obj) {
     return Object.entries(obj).reduce((acc, [key, value]) => {
@@ -252,26 +319,12 @@ export default function SideBar() {
                 PaperProps={{
                   component: "form",
                   onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                    event.preventDefault();
-                    const formData = new FormData(event.currentTarget);
-                    const formJson = Object.fromEntries(formData.entries());
-                    const data = removeEmptyPairs(formJson);
-                    axios
-                      .patch(url, data)
-                      .then(() => {
-                        setUpdatedUser({
-                          state: true,
-                          message: "User updated succesfully!",
-                        });
-                        setSnack(true);
-                      })
-                      .catch((error) => {
-                        setUpdatedUser({
-                          state: true,
-                          message: error.response.data,
-                        });
-                      });
-                    handleCloseSettings();
+                    patchData(
+                      event,
+                      url,
+                      handleCloseSettings,
+                      "User details updated successfully!"
+                    );
                   },
                 }}
               >
@@ -329,13 +382,16 @@ export default function SideBar() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          {["Home", "Create board"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
+                }}
+                onClick={() => {
+                  index % 2 === 0 ? navigate("/app") : handleOpenAddBoard();
                 }}
               >
                 <ListItemIcon
@@ -345,7 +401,7 @@ export default function SideBar() {
                     justifyContent: "center",
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index % 2 === 0 ? <HomeIcon /> : <AddCircleIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
@@ -353,30 +409,38 @@ export default function SideBar() {
           ))}
         </List>
         <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+        <Dialog
+          open={openAddBoard}
+          onClose={handleCloseAddBoard}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+              postData(
+                event,
+                post_board,
+                handleCloseAddBoard,
+                "Board successfully created!"
+              );
+            },
+          }}
+        >
+          <DialogTitle>Create board</DialogTitle>
+          <DialogContent>
+            <DialogContentText></DialogContentText>
+            <TextField
+              autoFocus
+              id="title"
+              name="title"
+              label="Title"
+              fullWidth
+              variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAddBoard}>Cancel</Button>
+            <Button type="submit">Save</Button>
+          </DialogActions>
+        </Dialog>
       </Drawer>
     </Box>
   );
