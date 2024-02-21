@@ -1,30 +1,35 @@
-# React + TypeScript + Vite
+# Pluma
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
+Pluma is a reactive and collaborative note-taking web application that aims to simplify the process of taking notes with your friends and colleagues!.
 
-Currently, two official plugins are available:
+## ⚙ Installation
+> Pluma is a fullstack web application, so you are expected to install the specific API in conjunction of this client. You can check the API [repository here.](https://github.com/EdgarModesto23/Pluma-backend)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+git clone github.com/EdgarModesto23/pluma-client
 
-## Expanding the ESLint configuration
+cd pluma-client
+npm install
+```
+Once installed, you'll need to create a .env file in the root of the directory and define a variable called "VITE_API_URL" with the address your Django server. (Which by default is localhost:8000).
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+You can then proceed to install the API locally to finish setting up our development server.
 
-- Configure the top-level `parserOptions` property like this:
+```bash
+git clone https://github.com/EdgarModesto23/pluma-api.git
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+cd Pluma-backend
+python -m venv .venv
+source ./.venv/bin/activate
+python -m pip freeze requirements.txt
+
+python manage.py runserver
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## 💬 Contact
++ [Linkedin](www.linkedin.com/in/edgarmodesto23)
+
+Submit an issue (above in the issues tab)
+
+
