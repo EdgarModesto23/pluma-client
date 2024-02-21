@@ -16,11 +16,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { LogoDefault } from "../svg/logo-no-title";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { UserInfo, useUserInfo } from "../auth/User";
 import {
   Button,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,9 +35,15 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import Snackbar from "@mui/material/Snackbar";
-import { KeyboardArrowDown } from "@mui/icons-material";
+import {
+  ExpandLess,
+  ExpandMore,
+  KeyboardArrowDown,
+  StarBorder,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import MyBoards from "./my-boards-list";
 
 const drawerWidth = 240;
 
@@ -108,9 +116,31 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+const Main = styled("main", {
+  shouldForwardProp: (prop) => prop !== "open",
+})<{
+  open?: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create("margin", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginTop: "50px",
+  marginLeft: `-${drawerWidth}px - 10px`,
+  ...(open && {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  }),
+}));
+
 const settings = ["Update user details", "Logout"];
 
-export default function SideBar() {
+export default function Layout({ children }) {
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -120,7 +150,6 @@ export default function SideBar() {
 
   const [openSettings, setOpenSettings] = React.useState(false);
   const [openAddBoard, setOpenAddBoard] = React.useState(false);
-
   const [updatedUser, setUpdatedUser] = React.useState({
     state: false,
     message: "",
@@ -187,7 +216,7 @@ export default function SideBar() {
     closeHandler();
   };
 
-  const postData = (
+  const postData = async (
     event: React.FormEvent<HTMLFormElement>,
     url: string,
     closeHandler: () => void,
@@ -197,13 +226,20 @@ export default function SideBar() {
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
     const data = removeEmptyPairs(formJson);
-    axios
+    await axios
       .post(url, data)
-      .then(() => {
+      .then((response) => {
         setUpdatedUser({
           state: true,
           message: successMethod,
         });
+        const newBoard: BoardInfo = {
+          id: response.data.id,
+          title: response.data.title,
+          creator: response.data.creator,
+          allowed_users: response.data.allowed_users,
+        };
+        handleTotalBoards(newBoard);
         setSnack(true);
       })
       .catch((error) => {
@@ -229,7 +265,9 @@ export default function SideBar() {
     }, {});
   }
 
-  const config = genConfig(userInfo?.user.email);
+  const seed = (321431 * 2) / Number(userInfo?.user.id);
+
+  const config = genConfig(seed.toString());
 
   React.useEffect(() => {
     const baseURL = import.meta.env.VITE_API_URL;
@@ -251,6 +289,58 @@ export default function SideBar() {
         });
     }
   }, [updatedUser, userInfo]);
+
+  interface BoardInfo {
+    id: string;
+    title: string;
+    creator: number;
+    allowed_users: Array<string>;
+  }
+
+  interface Response {
+    boards: Array<BoardInfo>;
+  }
+  const [totalBoards, setTotalBoards] = React.useState<Response>({
+    boards: [],
+  });
+
+  const handleTotalBoards = React.useCallback(
+    (entry: BoardInfo) => {
+      const current = totalBoards;
+      current.boards.push(entry);
+      setTotalBoards(current);
+    },
+    [totalBoards, setTotalBoards]
+  );
+
+  React.useEffect(() => {
+    const getBoards = () => {
+      const base_url = import.meta.env.VITE_API_URL;
+      const url = base_url + `board/`;
+      axios
+        .get(url)
+        .then((response) => {
+          response.data.map((board) => {
+            const current: BoardInfo = {
+              id: board.id,
+              title: board.title,
+              creator: board.creator,
+              allowed_users: board.allowed_users,
+            };
+            handleTotalBoards(current);
+          });
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
+    };
+    let ignore = false;
+
+    if (!ignore) getBoards();
+    return () => {
+      ignore = true;
+    };
+  }, [handleTotalBoards]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -338,14 +428,17 @@ export default function SideBar() {
                     label="Email Address"
                     type="email"
                     fullWidth
+                    defaultValue={userInfo?.user.email}
                     variant="standard"
                   />
+
                   <TextField
                     autoFocus
                     margin="dense"
                     id="username"
                     name="username"
                     label="Username"
+                    defaultValue={userInfo?.user.username}
                     fullWidth
                     variant="standard"
                   />
@@ -409,6 +502,7 @@ export default function SideBar() {
           ))}
         </List>
         <Divider />
+        <MyBoards totalBoards={totalBoards} />
         <Dialog
           open={openAddBoard}
           onClose={handleCloseAddBoard}
@@ -442,6 +536,9 @@ export default function SideBar() {
           </DialogActions>
         </Dialog>
       </Drawer>
+      <Main theme={theme} open={open}>
+        {children}
+      </Main>
     </Box>
   );
 }

@@ -1,4 +1,5 @@
-import SideBar from "../structure/side-bar.tsx";
+import Board from "../structure/board.tsx";
+import Layout from "../structure/side-bar.tsx";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
 const theme = createTheme({
@@ -27,7 +28,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SideBar />
+      <Layout>
+        <Board />
+      </Layout>
     </ThemeProvider>
   );
 }

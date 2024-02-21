@@ -19,10 +19,12 @@ const Routes = () => {
         {
           path: "/app/",
           element: <App />,
-        },
-        {
-          path: "/app/:boardid",
-          element: <App />,
+          children: [
+            {
+              path: "/app/:boardid",
+              element: <App />,
+            },
+          ],
         },
         {
           path: "/app/logout",
