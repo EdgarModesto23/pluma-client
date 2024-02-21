@@ -216,7 +216,9 @@ export default function BasicSpeedDial() {
           >
             Cancel
           </Button>
-          <Button type="submit">Subscribe</Button>
+          <Button type="submit" variant="contained">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog

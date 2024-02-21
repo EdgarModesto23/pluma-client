@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useBoardContext } from "./board-context";
 import BasicCard from "./note";
+import BasicSpeedDial from "./dial";
 
 interface allowedUsers {
   email: string;
@@ -79,6 +80,7 @@ export default function Board({ children }) {
               </Grid>
             );
           })}
+          <BasicSpeedDial />
         </Grid>
       ) : (
         <Typography variant="h3">Welcome to Pluma!</Typography>
