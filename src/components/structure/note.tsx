@@ -265,7 +265,7 @@ export default function BasicCard({ content }) {
           <Button
             color="secondary"
             onClick={() => {
-              handleClose;
+              handleClose(setOpenEditor);
             }}
           >
             Cancel
