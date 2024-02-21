@@ -16,7 +16,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import { LogoDefault } from "../svg/logo-no-title";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { UserInfo, useUserInfo } from "../auth/User";
@@ -41,9 +40,10 @@ import {
   KeyboardArrowDown,
   StarBorder,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import MyBoards from "./my-boards-list";
+import { BoardTitleContext, useBoardContext } from "./board-context";
 
 const drawerWidth = 240;
 
@@ -141,6 +141,7 @@ const Main = styled("main", {
 const settings = ["Update user details", "Logout"];
 
 export default function Layout({ children }) {
+  const boardTitle = useBoardContext();
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -313,6 +314,13 @@ export default function Layout({ children }) {
     [totalBoards, setTotalBoards]
   );
 
+  const params = useParams();
+  React.useEffect(() => {
+    if (Object.keys(params).length === 0) {
+      boardTitle?.setTitle("");
+    }
+  }, [params, boardTitle]);
+
   React.useEffect(() => {
     const getBoards = () => {
       const base_url = import.meta.env.VITE_API_URL;
@@ -368,6 +376,14 @@ export default function Layout({ children }) {
             component="div"
           >
             Pluma
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{ flexGrow: 1 }}
+            paddingX={1}
+            component="div"
+          >
+            {boardTitle?.title}
           </Typography>
           <Box sx={{ flexGrow: 0 }}>
             <Button color="secondary" onClick={handleOpenUserMenu}>

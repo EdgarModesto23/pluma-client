@@ -11,6 +11,7 @@ import { useState } from "react";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { useNavigate } from "react-router-dom";
+import { useBoardContext } from "./board-context";
 
 interface BoardInfo {
   id: string;
@@ -27,7 +28,6 @@ export default function MyBoards({ totalBoards }) {
     console.log(totalBoards);
     setBoardMenu(!openBoardMenu);
   };
-
   return (
     <List>
       <ListItemButton onClick={handleBoardMenu} sx={{ px: 2.5 }}>
