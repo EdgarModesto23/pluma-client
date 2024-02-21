@@ -1,10 +1,9 @@
-import { Container, Grid } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useBoardContext } from "./board-context";
 import BasicCard from "./note";
-import BasicSpeedDial from "./dial";
 
 interface allowedUsers {
   email: string;
@@ -47,44 +46,43 @@ export default function Board({ children }) {
     [boardContext]
   );
 
-  const [url, seturl] = useState(
-    import.meta.env.VITE_API_URL + `board/${params.boardid}`
-  );
   const [hasFetched, setHasFetched] = useState(false);
-
   useEffect(() => {
     async function getBoard() {
-      const response = await axios.get(url);
-
-      const newBoard: boardInfo = {
-        id: response.data.id,
-        title: response.data.title,
-        creator: response.data.creator,
-        allowed_users: response.data.allowed_users,
-        notes: response.data.note_board,
-      };
-
-      return newBoard;
+      await axios
+        .get(import.meta.env.VITE_API_URL + `board/${params.boardid}`)
+        .then((response) => {
+          const newBoard: boardInfo = {
+            id: response.data.id,
+            title: response.data.title,
+            creator: response.data.creator,
+            allowed_users: response.data.allowed_users,
+            notes: response.data.note_board,
+          };
+          handleCurrentBoard(newBoard);
+        });
     }
-
     if (!hasFetched) {
-      getBoard().then((board) => {
-        handleCurrentBoard(board);
-      });
+      getBoard();
       setHasFetched(false);
     }
-  }, [handleCurrentBoard, url, hasFetched]);
+  }, [handleCurrentBoard, params, hasFetched]);
 
   return (
-    <Grid container spacing={2}>
-      {currentBoard.notes.map((note: noteInfo) => {
-        return (
-          <Grid item key={note.title}>
-            <BasicCard content={note} />
-          </Grid>
-        );
-      })}
-      <BasicSpeedDial />
-    </Grid>
+    <Box>
+      {params?.boardid ? (
+        <Grid container spacing={2}>
+          {currentBoard.notes.map((note: noteInfo) => {
+            return (
+              <Grid item key={note.title}>
+                <BasicCard content={note} />
+              </Grid>
+            );
+          })}
+        </Grid>
+      ) : (
+        <Typography variant="h3">Welcome to Pluma!</Typography>
+      )}
+    </Box>
   );
 }
