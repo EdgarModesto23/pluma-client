@@ -1,5 +1,7 @@
 # Pluma
 
+![Image](https://github.com/EdgarModesto23/pluma-client/blob/main/Plumadashboard.png)
+
 ## Description
 Pluma is a reactive and collaborative note-taking web application that aims to simplify the process of taking notes with your friends and colleagues!.
 
