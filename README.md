@@ -30,7 +30,7 @@ python manage.py runserver
 ```
 
 ## 💬 Contact
-+ [Linkedin](www.linkedin.com/in/edgarmodesto23)
++ [Linkedin](https://www.linkedin.com/in/edgarmodesto23)
 
 Submit an issue (above in the issues tab)
 
