@@ -18,14 +18,33 @@ Once installed, you'll need to create a .env file in the root of the directory a
 
 You can then proceed to install the API locally to finish setting up our development server.
 
+## API installation
+
+### Linux
 ```bash
 git clone https://github.com/EdgarModesto23/pluma-api.git
 
-cd Pluma-backend
+cd pluma-api
 python -m venv .venv
 source ./.venv/bin/activate
-python -m pip freeze requirements.txt
+python -m pip install -r requirements.txt
 
+python manage.py migrate
+python manage.py runserver
+```
+
+### Windows
+```bash
+git clone https://github.com/EdgarModesto23/pluma-api.git
+
+cd pluma-api
+python -m venv .venv
+
+.\.venv\Scripts\activate
+python -m pip install -r requirements.txt
+
+
+python manage.py migrate
 python manage.py runserver
 ```
 
