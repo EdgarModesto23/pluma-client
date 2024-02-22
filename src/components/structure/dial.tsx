@@ -22,7 +22,6 @@ import axios from "axios";
 import { noteInfo, useBoardContext } from "./board-context";
 import { CirclePicker } from "react-color";
 import ReactQuill from "react-quill";
-import { GitHub } from "@mui/icons-material";
 
 export default function BasicSpeedDial() {
   const [showNote, setShowNote] = React.useState(false);

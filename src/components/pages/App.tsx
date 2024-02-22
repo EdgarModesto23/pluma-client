@@ -1,4 +1,3 @@
-import { Note } from "@mui/icons-material";
 import Board from "../structure/board.tsx";
 import Layout from "../structure/side-bar.tsx";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
@@ -30,9 +29,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Layout>
-        <Board>
-          <Note />
-        </Board>
+        <Board />
       </Layout>
     </ThemeProvider>
   );

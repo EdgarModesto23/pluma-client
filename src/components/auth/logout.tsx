@@ -23,7 +23,7 @@ const Logout = () => {
   }, [token?.token, navigate, user]);
 
   const handleLogout = () => {
-    token?.setToken();
+    token?.setToken("");
   };
 
   setTimeout(() => {

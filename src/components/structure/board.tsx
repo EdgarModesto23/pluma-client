@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -26,8 +26,7 @@ interface boardInfo {
   notes: Array<noteInfo>;
 }
 
-export default function Board({ children }) {
-  const [getNotes, setGetNotes] = useState(true);
+export default function Board() {
   const [currentBoard, setCurrentBoard] = useState<boardInfo>({
     id: "",
     title: "",

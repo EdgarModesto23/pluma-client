@@ -21,7 +21,6 @@ import Avatar, { genConfig } from "react-nice-avatar";
 import { UserInfo, useUserInfo } from "../auth/User";
 import {
   Button,
-  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -34,16 +33,11 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import Snackbar from "@mui/material/Snackbar";
-import {
-  ExpandLess,
-  ExpandMore,
-  KeyboardArrowDown,
-  StarBorder,
-} from "@mui/icons-material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import MyBoards from "./my-boards-list";
-import { BoardTitleContext, useBoardContext } from "./board-context";
+import { useBoardContext } from "./board-context";
 
 const drawerWidth = 240;
 
