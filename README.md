@@ -9,7 +9,7 @@ Pluma is a reactive and collaborative note-taking web application that aims to s
 > Pluma is a fullstack web application, so you are expected to install the specific API in conjunction of this client. You can check the API [repository here.](https://github.com/EdgarModesto23/Pluma-backend)
 
 ```bash
-git clone github.com/EdgarModesto23/pluma-client
+git clone https://github.com/EdgarModesto23/pluma-client.git
 
 cd pluma-client
 npm install
