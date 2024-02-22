@@ -64,6 +64,7 @@ export default function SignIn() {
     setError(true);
   };
 
+  const user = useUserInfo();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const baseURL = import.meta.env.VITE_API_URL;
@@ -87,6 +88,13 @@ export default function SignIn() {
       .post(url, dataObj)
       .then((response) => {
         token?.setToken(response.data.access);
+        user?.setUser({
+          id: response.data.id,
+          username: response.data.username,
+          name: response.data.name,
+          email: response.data.email,
+        });
+        navigate("/app", { replace: true });
       })
       .catch((error) => {
         const error_data = Object.values(error.response.data);

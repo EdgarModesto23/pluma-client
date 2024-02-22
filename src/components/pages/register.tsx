@@ -17,6 +17,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Container from "@mui/material/Container";
 import { useAuth } from "../auth/Auth";
+import { useNavigate } from "react-router-dom";
+import { useUserInfo } from "../auth/User";
 
 interface CreateUser {
   name: string;
@@ -112,6 +114,9 @@ export default function Register() {
       .map(([key, value]) => `${key}${separator}${value}\n`)
       .join("\n");
   }
+  const token = useAuth();
+  const navigate = useNavigate();
+  const user = useUserInfo();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -119,17 +124,22 @@ export default function Register() {
     const form = new FormData(event.currentTarget);
     const data = JSON.stringify(Object.fromEntries(form.entries()));
     const dataObj = JSON.parse(data);
-
     dataObj["name"] = dataObj["firstName"] + dataObj["lastName"];
 
     delete dataObj["firstName"], dataObj["lastName"];
-    const token = useAuth();
     fieldValidator(dataObj);
     //setup auth object
     axios
       .post(url, dataObj)
       .then((response) => {
         token?.setToken(response.data.access);
+        user?.setUser({
+          id: response.data.id,
+          username: response.data.username,
+          name: response.data.name,
+          email: response.data.email,
+        });
+        navigate("/app", { replace: true });
       })
       .catch((error) => {
         const error_data = joinErrors(error.response.data);

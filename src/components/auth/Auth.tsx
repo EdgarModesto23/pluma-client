@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { UserInfo, useUserInfo } from "./User";
 
 type AuthProviderProps = {
   token: string | null;
@@ -7,12 +8,33 @@ type AuthProviderProps = {
 };
 
 const AuthContext = createContext<AuthProviderProps | null>(null);
+const baseURL = import.meta.env.VITE_API_URL;
+const url = baseURL + "user/get";
 
 const AuthProvider = ({ children }) => {
+  const user = useUserInfo();
   // State to hold the authentication token
   const [token, setToken_] = useState(localStorage.getItem("access_token"));
   // Function to set the authentication token
   const setToken = (newToken: string) => {
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      })
+      .then((response) => {
+        const newUser: UserInfo = {
+          id: response.data.id,
+          email: response.data.email,
+          username: response.data.username,
+          name: response.data.name,
+        };
+        user?.setUser(newUser);
+      })
+      .catch((response) => {
+        console.log(response);
+      });
     setToken_(newToken);
   };
 

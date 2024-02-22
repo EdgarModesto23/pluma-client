@@ -8,7 +8,6 @@ import Logout from "../auth/logout";
 
 const Routes = () => {
   const token = useAuth();
-  console.log(token?.token);
 
   // Define routes accessible only to authenticated users
   const routesForAuthenticatedOnly = [
