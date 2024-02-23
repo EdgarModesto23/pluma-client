@@ -22,8 +22,14 @@ import axios from "axios";
 import { noteInfo, useBoardContext } from "./board-context";
 import { CirclePicker } from "react-color";
 import ReactQuill from "react-quill";
+import { boardInfo } from "./board";
 
-export default function BasicSpeedDial() {
+interface context {
+  current: boardInfo;
+  handler: (newNote: Array<noteInfo>) => void;
+}
+
+export default function BasicSpeedDial({ current, handler }: context) {
   const [showNote, setShowNote] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);
   const [showInv, setShowInv] = React.useState(false);
@@ -117,14 +123,10 @@ export default function BasicSpeedDial() {
             formJson.color = color;
             formJson.board = params?.boardid ? params.boardid : "";
             axios.post(base_url, formJson).then((response) => {
-              boardContext?.notes
-                ? () => {
-                    const newNote: noteInfo = response.data;
-                    const currentNotes = boardContext?.notes;
-                    currentNotes?.push(newNote);
-                    boardContext?.setNotes(currentNotes);
-                  }
-                : null;
+              const newNote: noteInfo = response.data;
+              const currentNotes = current.notes;
+              currentNotes.push(newNote);
+              handler(currentNotes);
               setSnack({
                 state: true,
                 message: "You added a note succesfully!",

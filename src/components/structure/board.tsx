@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useBoardContext } from "./board-context";
 import BasicCard from "./note";
@@ -37,15 +37,13 @@ export default function Board() {
   });
 
   const handleNotes = (newNotes: Array<noteInfo>) => {
-    console.log("chavalos");
-    // Create a new object with the updated data
     const updatedBoard = {
-      ...currentBoard, // Spread existing properties
-      notes: newNotes, // Update the notes property
+      ...currentBoard,
+      notes: newNotes,
     };
     setCurrentBoard(updatedBoard);
   };
-
+  const boardContext = useBoardContext();
   useEffect(() => {
     async function fetchBoardData() {
       try {
@@ -59,15 +57,16 @@ export default function Board() {
           allowed_users: response.data.allowed_users,
           notes: response.data.note_board,
         };
+
         setCurrentBoard(newBoard);
+        boardContext?.setTitle(newBoard.title);
       } catch (error) {
         console.error("Error fetching board:", error);
-        // Handle errors appropriately
       }
     }
 
-    fetchBoardData(); // Trigger the fetch on first render
-  }, [params]);
+    fetchBoardData();
+  }, [params, boardContext]);
 
   return (
     <Box>
@@ -84,7 +83,7 @@ export default function Board() {
               </Grid>
             );
           })}
-          <BasicSpeedDial />
+          <BasicSpeedDial current={currentBoard} handler={handleNotes} />
         </Grid>
       ) : (
         <Typography variant="h3">Welcome to Pluma!</Typography>
