@@ -232,10 +232,12 @@ export default function BasicSpeedDial({ current, handler }: context) {
           component: "form",
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            const url = import.meta.env.VITE_API_URL + `invite/`;
+            const url =
+              import.meta.env.VITE_API_URL + `board/${params.boardid}/users/`;
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
-            const data = { receivers: [formJson.email] };
+            const data = { email: formJson.email, action: "add" };
+
             axios.post(url, data).then((response) => {
               setSnack({
                 state: true,

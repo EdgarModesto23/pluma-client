@@ -305,8 +305,11 @@ export default function Layout({ children }) {
   const handleTotalBoards = React.useCallback(
     (entry: BoardInfo) => {
       const current = totalBoards;
-      current.boards.push(entry);
-      setTotalBoards(current);
+      const current_ids = totalBoards.boards.map((board) => board.id);
+      if (!current_ids.includes(entry.id)) {
+        current.boards.push(entry);
+        setTotalBoards(current);
+      }
     },
     [totalBoards, setTotalBoards]
   );
@@ -341,7 +344,7 @@ export default function Layout({ children }) {
         });
     };
 
-    if (token?.token) getBoards();
+    getBoards();
   }, [handleTotalBoards, token]);
 
   return (
