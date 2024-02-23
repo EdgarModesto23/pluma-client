@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../auth/Auth";
+import { useAuth } from "../auth/auth-context";
 import { ProtectedRoute } from "./ProtectedRoute";
 import App from "../pages/App";
 import SignIn from "../pages/sign-in";

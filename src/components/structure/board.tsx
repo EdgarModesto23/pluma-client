@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useBoardContext } from "./board-context";
+import { useBoardContext } from "./board-use-context";
 import BasicCard from "./note";
 import BasicSpeedDial from "./dial";
 

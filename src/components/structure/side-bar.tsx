@@ -18,7 +18,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { LogoDefault } from "../svg/logo-no-title";
 import Avatar, { genConfig } from "react-nice-avatar";
-import { UserInfo, useUserInfo } from "../auth/User";
+import { UserInfo } from "../auth/User";
 import {
   Button,
   Dialog,
@@ -37,7 +37,9 @@ import { KeyboardArrowDown } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import MyBoards from "./my-boards-list";
-import { useBoardContext } from "./board-context";
+import { useBoardContext } from "./board-use-context";
+import { useUserInfo } from "../auth/usr-context";
+import { useAuth } from "../auth/auth-context";
 
 const drawerWidth = 240;
 
@@ -267,7 +269,8 @@ export default function Layout({ children }) {
   React.useEffect(() => {
     const baseURL = import.meta.env.VITE_API_URL;
     const url = baseURL + "user/get";
-    if (updatedUser["state"]) {
+    if (updatedUser["state"] || !userInfo?.user) {
+      console.log("stereolove");
       axios
         .get(url)
         .then((response) => {
@@ -315,12 +318,13 @@ export default function Layout({ children }) {
     }
   }, [params, boardTitle]);
 
+  const token = useAuth();
   React.useEffect(() => {
     const getBoards = () => {
       const base_url = import.meta.env.VITE_API_URL;
       const url = base_url + `board/`;
       axios
-        .get(url)
+        .get(url, { headers: { Authorization: `Bearer ${token?.token}` } })
         .then((response) => {
           response.data.map((board) => {
             const current: BoardInfo = {
@@ -336,13 +340,9 @@ export default function Layout({ children }) {
           console.log(errors);
         });
     };
-    let ignore = false;
 
-    if (!ignore) getBoards();
-    return () => {
-      ignore = true;
-    };
-  }, [handleTotalBoards]);
+    if (token?.token) getBoards();
+  }, [handleTotalBoards, token]);
 
   return (
     <Box sx={{ display: "flex" }}>

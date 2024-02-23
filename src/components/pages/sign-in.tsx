@@ -13,8 +13,8 @@ import Paper from "@mui/material/Paper";
 import { Alert } from "@mui/material";
 import { Logo } from "../svg/logo";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/Auth";
-import { useUserInfo } from "../auth/User";
+import { useAuth } from "../auth/auth-context";
+import { useUserInfo } from "../auth/usr-context";
 
 function Footer(props) {
   return (

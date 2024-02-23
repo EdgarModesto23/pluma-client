@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./Auth.tsx";
-import { useEffect } from "react";
-import { UserInfo, useUserInfo } from "./User.tsx";
+import { useAuth } from "./auth-context.tsx";
+import { useContext, useEffect } from "react";
+import { UserContext, UserInfo } from "./User.tsx";
 const Logout = () => {
   const token = useAuth();
   const navigate = useNavigate();
 
-  const user = useUserInfo();
+  const user = useContext(UserContext);
 
   useEffect(() => {
     const noUser: UserInfo = {

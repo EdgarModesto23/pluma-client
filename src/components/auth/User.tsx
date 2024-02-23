@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useAuth } from "./Auth";
+import { createContext, useEffect, useMemo, useState } from "react";
+import { useAuth } from "./auth-context";
 import axios from "axios";
 
 interface UserContextProps {
@@ -14,7 +14,7 @@ export interface UserInfo {
   name: string;
 }
 
-const UserContext = createContext<UserContextProps | null>(null);
+export const UserContext = createContext<UserContextProps | null>(null);
 
 const UserProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState<string>("");
@@ -35,7 +35,11 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     if (token?.token) {
       axios
-        .get(url)
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${token.token}`,
+          },
+        })
         .then((response) => {
           const newUser: UserInfo = {
             id: response.data.id,
@@ -69,9 +73,6 @@ const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
-};
-export const useUserInfo = () => {
-  return useContext(UserContext);
 };
 
 export default UserProvider;

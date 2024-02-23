@@ -45,8 +45,4 @@ const TitleProvider = ({ children }) => {
   );
 };
 
-export function useBoardContext() {
-  return useContext(BoardTitleContext);
-}
-
 export default TitleProvider;

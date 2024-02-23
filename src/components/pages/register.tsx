@@ -12,9 +12,9 @@ import axios from "axios";
 import { Alert } from "@mui/material";
 import { Logo } from "../svg/logo";
 import Container from "@mui/material/Container";
-import { useAuth } from "../auth/Auth";
+import { useAuth } from "../auth/auth-context.tsx";
 import { useNavigate } from "react-router-dom";
-import { useUserInfo } from "../auth/User";
+import { UserContext } from "../auth/User";
 
 interface CreateUser {
   name: string;
@@ -22,7 +22,6 @@ interface CreateUser {
   username: string;
   password: string;
 }
-
 function Footer(props) {
   return (
     <Typography
@@ -112,7 +111,7 @@ export default function Register() {
   }
   const token = useAuth();
   const navigate = useNavigate();
-  const user = useUserInfo();
+  const user = React.useContext(UserContext);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

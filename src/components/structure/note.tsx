@@ -20,11 +20,12 @@ import { HighlightOff } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { CirclePicker } from "react-color";
 import axios from "axios";
-import { noteInfo, useBoardContext } from "./board-context";
+import { noteInfo } from "./board-context";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import SanitizedHTML from "./sanitize";
 import { boardInfo } from "./board";
+import { useBoardContext } from "./board-use-context";
 
 interface Props {
   content: noteInfo;

@@ -19,7 +19,8 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import { noteInfo, useBoardContext } from "./board-context";
+import { useBoardContext } from "./board-use-context";
+import { noteInfo } from "./board";
 import { CirclePicker } from "react-color";
 import ReactQuill from "react-quill";
 import { boardInfo } from "./board";
