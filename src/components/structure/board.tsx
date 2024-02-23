@@ -18,7 +18,7 @@ export interface noteInfo {
   creator: string;
 }
 
-interface boardInfo {
+export interface boardInfo {
   id: string;
   title: string;
   creator: string;
@@ -27,6 +27,7 @@ interface boardInfo {
 }
 
 export default function Board() {
+  const params = useParams();
   const [currentBoard, setCurrentBoard] = useState<boardInfo>({
     id: "",
     title: "",
@@ -35,38 +36,38 @@ export default function Board() {
     notes: [],
   });
 
-  const params = useParams();
-  const boardContext = useBoardContext();
-  const handleCurrentBoard = useCallback(
-    (newBoard: boardInfo) => {
-      setCurrentBoard(newBoard);
-      boardContext?.setNotes(newBoard.notes);
-      boardContext?.setTitle(newBoard.title);
-    },
-    [boardContext]
-  );
+  const handleNotes = (newNotes: Array<noteInfo>) => {
+    console.log("chavalos");
+    // Create a new object with the updated data
+    const updatedBoard = {
+      ...currentBoard, // Spread existing properties
+      notes: newNotes, // Update the notes property
+    };
+    setCurrentBoard(updatedBoard);
+  };
 
-  const [hasFetched, setHasFetched] = useState(false);
   useEffect(() => {
-    async function getBoard() {
-      await axios
-        .get(import.meta.env.VITE_API_URL + `board/${params.boardid}`)
-        .then((response) => {
-          const newBoard: boardInfo = {
-            id: response.data.id,
-            title: response.data.title,
-            creator: response.data.creator,
-            allowed_users: response.data.allowed_users,
-            notes: response.data.note_board,
-          };
-          handleCurrentBoard(newBoard);
-        });
+    async function fetchBoardData() {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + `board/${params.boardid}`
+        );
+        const newBoard: boardInfo = {
+          id: response.data.id,
+          title: response.data.title,
+          creator: response.data.creator,
+          allowed_users: response.data.allowed_users,
+          notes: response.data.note_board,
+        };
+        setCurrentBoard(newBoard);
+      } catch (error) {
+        console.error("Error fetching board:", error);
+        // Handle errors appropriately
+      }
     }
-    if (!hasFetched) {
-      getBoard();
-      setHasFetched(false);
-    }
-  }, [handleCurrentBoard, params, hasFetched]);
+
+    fetchBoardData(); // Trigger the fetch on first render
+  }, [params]);
 
   return (
     <Box>
@@ -75,7 +76,11 @@ export default function Board() {
           {currentBoard.notes.map((note: noteInfo) => {
             return (
               <Grid item key={note.title}>
-                <BasicCard content={note} />
+                <BasicCard
+                  content={note}
+                  handler={handleNotes}
+                  board={currentBoard}
+                />
               </Grid>
             );
           })}

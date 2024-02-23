@@ -24,8 +24,15 @@ import { noteInfo, useBoardContext } from "./board-context";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import SanitizedHTML from "./sanitize";
+import { boardInfo } from "./board";
 
-export default function BasicCard({ content }) {
+interface Props {
+  content: noteInfo;
+  handler: (newNote: Array<noteInfo>) => void;
+  board: boardInfo;
+}
+
+export default function BasicCard({ content, handler, board }: Props) {
   const [openDelete, setOpenDelete] = React.useState(false);
   const [openSettings, setOpenSettings] = React.useState(false);
   const [openEditor, setOpenEditor] = React.useState(false);
@@ -110,20 +117,17 @@ export default function BasicCard({ content }) {
           onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
             const url = base_url + `${content.id}/`;
             event.preventDefault();
-            await axios.delete(url).then(
-              boardContext?.notes
-                ? () => {
-                    const newNotes: Array<noteInfo> = boardContext.notes.filter(
-                      (note) => note.id != content.id
-                    );
-                    setSnack({
-                      state: true,
-                      message: "Note was deleted successfully!",
-                    });
-                    boardContext?.setNotes(newNotes);
-                  }
-                : null
-            );
+            await axios.delete(url).then(() => {
+              const newNotes: Array<noteInfo> = board.notes.filter(
+                (note) => note.id != content.id
+              );
+              setSnack({
+                state: true,
+                message: "Note was deleted successfully!",
+              });
+              handler(newNotes);
+              boardContext?.setNotes(newNotes);
+            });
             handleClose(setOpenDelete);
           },
         }}
@@ -167,21 +171,15 @@ export default function BasicCard({ content }) {
             formJson.color = color;
             await axios.patch(url, formJson).then((response) => {
               const updatedNote: noteInfo = response.data;
-              boardContext?.notes
-                ? () => {
-                    const newNotes: Array<noteInfo> = boardContext.notes.map(
-                      (note) => (note.id == content.id ? updatedNote : note)
-                    );
-                    boardContext?.setNotes(newNotes);
-                  }
-                : null;
-
+              const newNotes: Array<noteInfo> = board.notes.map((note) =>
+                note.id == content.id ? updatedNote : note
+              );
+              handler(newNotes);
               setSnack({
                 state: true,
                 message: "Note details modified successfully!",
               });
             });
-
             handleClose(setOpenSettings);
           },
         }}
@@ -212,7 +210,6 @@ export default function BasicCard({ content }) {
           <Button
             color="secondary"
             onClick={() => {
-              console.log(text);
               handleClose(setOpenSettings);
             }}
           >
@@ -238,14 +235,10 @@ export default function BasicCard({ content }) {
             const formJson = { body: text };
             await axios.patch(url, formJson).then((response) => {
               const updatedNote: noteInfo = response.data;
-              boardContext?.notes
-                ? () => {
-                    const newNotes: Array<noteInfo> = boardContext.notes.map(
-                      (note) => (note.id == content.id ? updatedNote : note)
-                    );
-                    boardContext?.setNotes(newNotes);
-                  }
-                : null;
+              const newNotes: Array<noteInfo> = board.notes.map((note) =>
+                note.id == content.id ? updatedNote : note
+              );
+              handler(newNotes);
               setSnack({
                 state: true,
                 message: "Note was edited successfully!",
