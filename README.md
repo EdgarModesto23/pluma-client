@@ -5,8 +5,23 @@
 ## Description
 Pluma is a reactive and collaborative note-taking web application that aims to simplify the process of taking notes with your friends and colleagues!.
 
+
+## ⚡ Quick start
+
+The main concepts of Pluma are **Boards** and **Notes**.
+- Boards are the "containers" of your notes. You can add as many notes as you want and you can even invite people to join to a particular board so that they are able to see and edit any notes in it!.
+- Notes are bounded to the specific board you create them in. Simply create one and enjoy the richfull text editor courtesy of QuillJS.
+
+To get started. Simply create yourself an account on the official page present in this repository. and you'll be redirected to the main dashboard.
+
+- Once you're in. You can start by creating a board on the side panel and giving it a name.
+- Then, head over to your new board and start adding notes using the buttons on the right!
+
+
 ## ⚙ Installation
 > Pluma is a fullstack web application, so you are expected to install the specific API in conjunction of this client. You can check the API [repository here.](https://github.com/EdgarModesto23/Pluma-backend)
+
+To install pluma into your local machine, you'll have to install both the API and the client of the app:
 
 ```bash
 git clone https://github.com/EdgarModesto23/pluma-client.git
