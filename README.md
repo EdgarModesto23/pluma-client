@@ -10,7 +10,7 @@ Pluma is a reactive and collaborative note-taking web application that aims to s
 
 The main concepts of Pluma are **Boards** and **Notes**.
 - Boards are the "containers" of your notes. You can add as many notes as you want and you can even invite people to join to a particular board so that they are able to see and edit any notes in it!.
-- Notes are bounded to the specific board you create them in. Simply create one and enjoy the richfull text editor courtesy of QuillJS.
+- Notes are bounded to the specific board you create them in. Simply create one and add some text to it!
 
 To get started. Simply create yourself an account on the official page present in this repository. and you'll be redirected to the main dashboard.
 
